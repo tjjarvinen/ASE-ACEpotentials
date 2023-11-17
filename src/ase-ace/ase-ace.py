@@ -1,9 +1,10 @@
 import numpy as np
 from juliacall import Main as jl
+import juliapkg
 from ase import io
 from ase.calculators.calculator import Calculator
 from ase.constraints import voigt_6_to_full_3x3_stress, full_3x3_to_voigt_6_stress
-#atoms = io.read("dev/ACEmd/data/TiAl-big.xyz")
+#atoms = io.read( jl.seval('joinpath(pkgdir(ACEmd), "data", "TiAl-big.xyz")') )
 
 
 #pot_file = jl.seval( 'joinpath(pkgdir(ACEmd), "data", "TiAl.json")' )
@@ -20,7 +21,7 @@ class ACEcalculator(Calculator):
     def __init__(self, potential_file, proj_dir=None):
         Calculator.__init__(self)
         if proj_dir != None:
-            jl.seval(f'using Pkg; Pkg.activate("{proj_dir}")')
+            juliapkg.activate(proj_dir)
         jl.seval("using ACEmd.ASEhelper")
         jl.seval("using ACEmd")
         self.ace_calculator = jl.seval(f'load_ace_model("{potential_file}")') #julia.eval
