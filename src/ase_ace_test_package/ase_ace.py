@@ -1,3 +1,5 @@
+# You need to have PYTHON_JULIACALL_HANDLE_SIGNALS=yes environment variable set on
+
 import numpy as np
 from juliacall import Main as jl
 import juliapkg
@@ -5,8 +7,8 @@ from ase import io
 from ase.calculators.calculator import Calculator
 from ase.constraints import voigt_6_to_full_3x3_stress, full_3x3_to_voigt_6_stress
 #atoms = io.read( jl.seval('joinpath(pkgdir(ACEmd), "data", "TiAl-big.xyz")') )
-
-
+# jl.seval('using ACEmd')
+# ace = ACEcalculator(pot_file)
 #pot_file = jl.seval( 'joinpath(pkgdir(ACEmd), "data", "TiAl.json")' )
 
 
