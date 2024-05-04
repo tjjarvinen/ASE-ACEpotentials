@@ -6,10 +6,6 @@ import juliapkg
 from ase import io
 from ase.calculators.calculator import Calculator
 from ase.constraints import voigt_6_to_full_3x3_stress, full_3x3_to_voigt_6_stress
-#atoms = io.read( jl.seval('joinpath(pkgdir(ACEmd), "data", "TiAl-big.xyz")') )
-# jl.seval('using ACEmd')
-# ace = ACEcalculator(pot_file)
-#pot_file = jl.seval( 'joinpath(pkgdir(ACEmd), "data", "TiAl.json")' )
 
 
 class ACEcalculator(Calculator):
@@ -24,8 +20,10 @@ class ACEcalculator(Calculator):
         Calculator.__init__(self)
         if proj_dir != None:
             juliapkg.activate(proj_dir)
-        jl.seval("using ACEmd.ASEhelper")
-        jl.seval("using ACEmd")
+        jl.seval("using Distributed")
+        if jl.seval("nprocs()") < 2:
+            jl.seval("addprocs(1)")
+        jl.seval("@everywhere using ACEmd.ASEhelper")
         self.ace_calculator = jl.seval(f'load_ace_model("{potential_file}")') #julia.eval
         self.ace_energy = jl.seval('ase_energy')
         self.ace_forces = jl.seval('ase_forces')
@@ -36,7 +34,7 @@ class ACEcalculator(Calculator):
         #Calculator.calculate(self, atoms, properties, system_changes)
         atom_symbols = atoms.get_chemical_symbols()
         positions = atoms.get_positions()
-        cell = atoms.cell.cellpar()
+        cell = atoms.cell[:]
         pbc = atoms.get_pbc()
         self.results = {}
         if 'energy' in properties and 'forces' in properties and 'stress' in properties:
